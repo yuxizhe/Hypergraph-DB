@@ -383,6 +383,7 @@
                 keywords: edge.keywords || "",
                 summary: edge.summary || "",
                 weight: edge.weight || nodes.length,
+                description: edge.description || edge.summary || "",
                 ...createBubbleStyle(COLORS[i % COLORS.length]),
               });
 
@@ -596,7 +597,8 @@
 
               setHoverHyperedge({
                 keywords: hyperWithMax.keywords || "",
-                summary: hyperWithMax.summary || "",
+                description:
+                  hyperWithMax.description || hyperWithMax.summary || "",
                 members: hyperWithMax.members || [],
                 weight: getWeight(hyperWithMax),
               });
@@ -867,6 +869,14 @@
                           <div className="text-base font-semibold text-gray-900">
                             HyperEdge
                           </div>
+                          {hoverHyperedge.description && (
+                            <div>
+                              <div className="font-medium">Description:</div>
+                              <div className="mt-1 text-gray-600 bg-gray-50 p-2 rounded">
+                                {hoverHyperedge.description}
+                              </div>
+                            </div>
+                          )}
                           {hoverHyperedge.keywords && (
                             <div>
                               <span className="font-medium">Keywords:</span>
@@ -884,14 +894,7 @@
                               </div>
                             </div>
                           )}
-                          {hoverHyperedge.summary && (
-                            <div>
-                              <div className="font-medium">Summary:</div>
-                              <div className="mt-1 text-gray-600 bg-gray-50 p-2 rounded">
-                                {hoverHyperedge.summary}
-                              </div>
-                            </div>
-                          )}
+
                           {hoverHyperedge.members?.length > 0 && (
                             <div>
                               <div className="font-medium">
