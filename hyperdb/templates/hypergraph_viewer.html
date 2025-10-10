@@ -187,7 +187,7 @@
         return await response.json();
       };
 
-      function HyperGraphViewer() {
+      function HypergraphViewer() {
         const containerRef = useRef(null);
         const graphRef = useRef(null);
         const searchTimeoutRef = useRef(null);
@@ -809,7 +809,7 @@
                               : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                           }`}
                         >
-                          {mode === "hyper" ? "HyperGraph" : "Graph"}
+                          {mode === "hyper" ? "Hypergraph" : "Graph"}
                         </button>
                       ))}
                     </div>
@@ -862,12 +862,12 @@
                   {visualizationMode === "hyper" && (
                     <div className="shrink-0 w-72 h-full overflow-y-auto bg-white/95 backdrop-blur-sm border-l border-gray-200/50 p-3 shadow-xl overflow-y-auto">
                       <div className="text-lg font-bold text-gray-800 mb-3 pb-2 border-b-2 border-primary-500">
-                        HyperGraph Detail
+                        Hypergraph Detail
                       </div>
                       {hoverHyperedge && (
                         <div className="text-sm text-gray-700 space-y-3 border-b-2 border-primary-500 pb-6">
                           <div className="text-base font-semibold text-gray-900">
-                            HyperEdge
+                            Hyperedge
                           </div>
                           {hoverHyperedge.description && (
                             <div>
@@ -966,7 +966,7 @@
         );
       }
 
-      ReactDOM.render(<HyperGraphViewer />, document.getElementById("root"));
+      ReactDOM.render(<HypergraphViewer />, document.getElementById("root"));
     </script>
   </body>
 </html>
