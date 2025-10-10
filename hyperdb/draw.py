@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict
 from urllib.parse import parse_qs, urlparse
 
+from .base import BaseHypergraphDB
 from .hypergraph import HypergraphDB
 
 
@@ -224,7 +225,7 @@ class HypergraphAPIHandler(http.server.BaseHTTPRequestHandler):
 class HypergraphViewer:
     """Hypergraph visualization tool"""
 
-    def __init__(self, hypergraph_db: HypergraphDB, port: int = 8080):
+    def __init__(self, hypergraph_db: BaseHypergraphDB, port: int = 8080):
         self.hypergraph_db = hypergraph_db
         self.port = port
 
@@ -262,7 +263,9 @@ class HypergraphViewer:
             self.httpd.server_close()
 
 
-def draw_hypergraph(hypergraph_db: HypergraphDB, port: int = 8080, open_browser: bool = True, blocking: bool = True):
+def draw_hypergraph(
+    hypergraph_db: BaseHypergraphDB, port: int = 8080, open_browser: bool = True, blocking: bool = True
+):
     """
     Main function to draw hypergraph
 

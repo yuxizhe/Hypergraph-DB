@@ -85,7 +85,7 @@ def test_remove_v(hg):
     hg.remove_v(6)
     assert hg.has_v(6) is False
     assert hg.has_e((1, 5, 6)) is False
-    assert hg.has_e((5, 1)) == {"relation": "study"}
+    assert hg.e((1, 5)) == {"relation": "study"}
 
 
 def test_remove_e(hg):

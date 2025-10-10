@@ -12,13 +12,16 @@ class BaseHypergraphDB:
 
     storage_file: Union[str, Path] = field(default="my_hypergraph.hgdb", compare=False)
 
-    def save(self, file_path: Union[str, Path]):
+    def save(self, file_path: Union[str, Path]) -> bool:
         r"""
         Save the hypergraph to a file.
 
         Args:
             ``file_path`` (``Union[str, Path]``): The file path to save the
                 hypergraph.
+
+        Returns:
+            ``bool``: True if successful, False otherwise.
         """
         raise NotImplementedError
 
@@ -32,13 +35,15 @@ class BaseHypergraphDB:
         """
         raise NotImplementedError
 
-    @staticmethod
-    def load(self, file_path: Union[str, Path]):
+    def load(self, file_path: Union[str, Path]) -> bool:
         r"""
         Load the hypergraph from a file.
 
         Args:
             ``file_path`` (``Union[str, Path]``): The file path to load the hypergraph from.
+
+        Returns:
+            ``bool``: True if successful, False otherwise.
         """
         raise NotImplementedError
 
@@ -153,21 +158,23 @@ class BaseHypergraphDB:
         """
         raise NotImplementedError
 
-    def update_v(self, v_id: Any):
+    def update_v(self, v_id: Any, v_data: Dict[Any, Any]):
         r"""
         Update the vertex data.
 
         Args:
             ``v_id`` (``Any``): The vertex id.
+            ``v_data`` (``Dict[Any, Any]``): The vertex data.
         """
         raise NotImplementedError
 
-    def update_e(self, e_tuple: Tuple):
+    def update_e(self, e_tuple: Union[List[Any], Set[Any], Tuple[Any, ...]], e_data: Dict[Any, Any]):
         r"""
         Update the hyperedge data.
 
         Args:
-            ``e_tuple`` (``Tuple``): The hyperedge tuple: (v1_name, v2_name, ..., vn_name).
+            ``e_tuple`` (``Union[List[Any], Set[Any], Tuple[Any, ...]]``): The hyperedge tuple.
+            ``e_data`` (``Dict[Any, Any]``): The hyperedge data.
         """
         raise NotImplementedError
 
