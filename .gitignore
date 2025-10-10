@@ -176,4 +176,3 @@ tests/db/
 
 # UV package manager
 .venv/
-uv.lock
