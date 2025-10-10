@@ -197,12 +197,7 @@ class HypergraphAPIHandler(http.server.BaseHTTPRequestHandler):
         vertices_data = {}
         for v_id in all_vertices:
             v_data = hg.v(v_id, {})
-            vertices_data[v_id] = {
-                "entity_name": v_data.get("entity_name", v_id),
-                "entity_type": v_data.get("entity_type", ""),
-                "description": v_data.get("description", ""),
-                "additional_properties": v_data.get("additional_properties", ""),
-            }
+            vertices_data[v_id] = {**v_data}
 
         return {"vertices": vertices_data, "edges": edges_data}
 
