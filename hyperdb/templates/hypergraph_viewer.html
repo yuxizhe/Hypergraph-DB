@@ -30,8 +30,9 @@
       const { Graph } = window.G6;
 
       // API base path
-      // const API_BASE = window.location.origin;
-      const API_BASE = "http://localhost:8080";
+      const API_BASE = window.location.origin;
+      // dev mode
+      // const API_BASE = "http://localhost:8080";
 
       // Configuration constants
       const COLORS = [
@@ -308,6 +309,15 @@
           }
         }, [selectedVertex]);
 
+        const excludedKeys = new Set([
+          "id",
+          "label",
+          "style",
+          "data",
+          "weight",
+          "source_id",
+        ]);
+
         // Convert data to G6 Graph format
         const graphDataFormatted = useMemo(() => {
           if (!graphData) return null;
@@ -380,10 +390,9 @@
                 key: `bubble-sets-${key}`,
                 type: "bubble-sets",
                 members: nodes,
-                keywords: edge.keywords || "",
-                summary: edge.summary || "",
                 weight: edge.weight || nodes.length,
                 description: edge.description || edge.summary || "",
+                edge: edge,
                 ...createBubbleStyle(COLORS[i % COLORS.length]),
               });
 
@@ -418,30 +427,15 @@
           }
 
           // Add tooltip plugin
-          const excludedKeys = new Set([
-            "id",
-            "entity_name",
-            "entity_type",
-            "style",
-            "data",
-            "description",
-          ]);
 
           plugins.push({
             type: "tooltip",
             getContent: (e, items) => {
               return items
                 .map((item) => {
-                  let result = `<h4>${item.id}</h4>`;
-                  if (item.entity_name)
-                    result += `<p><strong>Name:</strong> ${item.entity_name}</p>`;
-                  if (item.entity_type)
-                    result += `<p><strong>Type:</strong> ${item.entity_type}</p>`;
-                  if (item.description) {
-                    result += `<p><strong>Description:</strong> ${formatDescription(
-                      item.description
-                    )}</p>`;
-                  }
+                  let result = `<h3><strong>${
+                    item.entity_name || item.id
+                  }</strong></h3>`;
                   // Display all remaining properties
                   Object.entries(item).forEach(([key, value]) => {
                     if (!excludedKeys.has(key)) {
@@ -520,7 +514,7 @@
             if (e.targetType === "bubble-sets") {
               const target = e.target.options;
               const newHyperedge = {
-                ...target,
+                ...target.edge,
                 members: Array.isArray(target.members) ? target.members : [],
               };
               setHoverHyperedge((prev) => {
@@ -869,48 +863,95 @@
                           <div className="text-base font-semibold text-gray-900">
                             Hyperedge
                           </div>
-                          {hoverHyperedge.description && (
-                            <div>
-                              <div className="font-medium">Description:</div>
-                              <div className="mt-1 text-gray-600 bg-gray-50 p-2 rounded">
-                                {hoverHyperedge.description}
-                              </div>
-                            </div>
-                          )}
-                          {hoverHyperedge.keywords && (
-                            <div>
-                              <span className="font-medium">Keywords:</span>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {hoverHyperedge.keywords
-                                  .split(/,|，|、|。|<SEP>/)
-                                  .map((keyword, i) => (
-                                    <span
-                                      key={i}
-                                      className="inline-block p-1 bg-primary-50 rounded"
-                                    >
-                                      {keyword}
-                                    </span>
-                                  ))}
-                              </div>
-                            </div>
-                          )}
+                          {Object.entries(hoverHyperedge).map(
+                            ([key, value]) => {
+                              // Skip empty values
+                              if (
+                                !value ||
+                                (Array.isArray(value) && value.length === 0) ||
+                                excludedKeys.has(key)
+                              ) {
+                                return null;
+                              }
 
-                          {hoverHyperedge.members?.length > 0 && (
-                            <div>
-                              <div className="font-medium">
-                                Nodes ({hoverHyperedge.members.length}):
-                              </div>
-                              <div className="flex flex-wrap gap-2 mt-2">
-                                {hoverHyperedge.members.map((member, i) => (
-                                  <span
-                                    key={i}
-                                    className="p-1 bg-primary-50 rounded"
-                                  >
-                                    {member}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
+                              // Special handling for keywords
+                              if (
+                                key === "keywords" &&
+                                typeof value === "string"
+                              ) {
+                                return (
+                                  <div key={key}>
+                                    <span className="font-medium">
+                                      keywords:
+                                    </span>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {value
+                                        .split(/,|，|、|。|<SEP>/)
+                                        .filter((k) => k.trim())
+                                        .map((keyword, i) => (
+                                          <span
+                                            key={i}
+                                            className="inline-block p-1 bg-primary-50 rounded text-xs"
+                                          >
+                                            {keyword.trim()}
+                                          </span>
+                                        ))}
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              // Special handling for members
+                              if (Array.isArray(value)) {
+                                return (
+                                  <div key={key}>
+                                    <div className="font-medium">
+                                      {key} ({value.length}):
+                                    </div>
+                                    <div className="flex flex-wrap gap-2 mt-2">
+                                      {value.map((member, i) => (
+                                        <span
+                                          key={i}
+                                          className="p-1 bg-primary-50 rounded text-xs"
+                                        >
+                                          {member}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              // Convert value to string for length check
+                              const stringValue =
+                                typeof value === "object"
+                                  ? JSON.stringify(value, null, 2)
+                                  : String(value).replace(/<SEP>/g, " | ");
+
+                              // If value is less than 10 characters, display as tag
+                              if (stringValue.length < 20) {
+                                return (
+                                  <div key={key}>
+                                    <span className="font-medium">{key}:</span>
+                                    <div className="mt-1">
+                                      <span className="inline-block px-2 py-1 bg-gray-100 rounded text-xs">
+                                        {stringValue}
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              }
+
+                              // Default handling for longer values
+                              return (
+                                <div key={key}>
+                                  <span className="font-medium">{key}:</span>
+                                  <div className="mt-1 text-gray-600 bg-gray-100 p-2 rounded text-xs">
+                                    {stringValue}
+                                  </div>
+                                </div>
+                              );
+                            }
                           )}
                         </div>
                       )}
@@ -919,42 +960,46 @@
                           <div className="text-base font-semibold text-gray-900">
                             Node
                           </div>
-                          {hoverNode.entity_name && (
-                            <div>
-                              <span className="font-medium">Name:</span>
-                              <span className="ml-2">
-                                {hoverNode.entity_name}
-                              </span>
-                            </div>
-                          )}
-                          {hoverNode.entity_type && (
-                            <div>
-                              <span className="font-medium">Type:</span>
-                              <span className="ml-2 inline-block px-2 py-0.5 bg-gray-100 rounded">
-                                {hoverNode.entity_type}
-                              </span>
-                            </div>
-                          )}
-                          {hoverNode.description && (
-                            <div>
-                              <span className="font-medium">Description:</span>
-                              <span className="ml-2">
-                                {formatDescription(hoverNode.description)}
-                              </span>
-                            </div>
-                          )}
-                          {hoverNode.additional_properties && (
-                            <div>
-                              <span className="font-medium">
-                                Additional Properties:
-                              </span>
-                              <span className="ml-2">
-                                {formatDescription(
-                                  hoverNode.additional_properties
-                                )}
-                              </span>
-                            </div>
-                          )}
+                          {Object.entries(hoverNode).map(([key, value]) => {
+                            // Skip empty values
+                            if (
+                              !value ||
+                              (Array.isArray(value) && value.length === 0) ||
+                              excludedKeys.has(key)
+                            ) {
+                              return null;
+                            }
+
+                            // Convert value to string for length check
+                            const stringValue =
+                              typeof value === "object"
+                                ? JSON.stringify(value, null, 2)
+                                : String(value).replace(/<SEP>/g, " | ");
+
+                            // If value is less than 10 characters, display as tag
+                            if (stringValue.length < 20) {
+                              return (
+                                <div key={key}>
+                                  <span className="font-medium">{key}:</span>
+                                  <div className="mt-1">
+                                    <span className="inline-block px-2 py-1 bg-gray-100 rounded text-xs">
+                                      {stringValue}
+                                    </span>
+                                  </div>
+                                </div>
+                              );
+                            }
+
+                            // Default handling for longer values
+                            return (
+                              <div key={key}>
+                                <span className="font-medium">{key}:</span>
+                                <div className="mt-1 text-gray-600 bg-gray-100 p-2 rounded text-xs">
+                                  {stringValue}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
                       )}
                     </div>
