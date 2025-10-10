@@ -5,7 +5,7 @@ on:
     types: [published]
 
 permissions:
-  contents: read
+  contents: write  # For uploading release assets
   id-token: write  # For trusted publishing to PyPI
 
 jobs:
@@ -28,10 +28,17 @@ jobs:
       run: uv python install 3.11
     
     - name: Install dependencies
-      run: uv sync --group test
+      run: uv sync --group test --group dev
+    
+    - name: Run quality checks
+      run: |
+        uv run black --check hyperdb/ tests/
+        uv run isort --check-only hyperdb/ tests/
+        uv run flake8 hyperdb/ tests/
+        uv run mypy hyperdb/ --ignore-missing-imports
     
     - name: Run tests
-      run: uv run pytest tests/ -v
+      run: uv run pytest tests/ -v --cov=hyperdb --cov-report=xml --cov-report=term
     
     - name: Build package
       run: uv build
@@ -40,19 +47,23 @@ jobs:
       run: |
         uv run pip install twine
         uv run twine check dist/*
+        
+    - name: Create package archive
+      run: |
+        cd dist
+        zip -r ../packages.zip .
+        cd ..
     
     - name: Publish to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        password: ${{ secrets.PYPI_API_TOKEN }}
         skip-existing: true
+        # Uses trusted publishing with id-token, no password needed
     
     - name: Upload Release Assets
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        upload_url: ${{ github.event.release.upload_url }}
-        asset_path: dist/
-        asset_name: packages
-        asset_content_type: application/zip
+        files: |
+          dist/*
+          packages.zip
+        token: ${{ secrets.GITHUB_TOKEN }}

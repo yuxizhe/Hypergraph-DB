@@ -110,18 +110,18 @@ class HypergraphDB(BaseHypergraphDB):
         return tuple(tmp)
 
     @cached_property
-    def all_v(self) -> List[str]:
+    def all_v(self) -> Set[Any]:
         r"""
-        Return a list of all vertices in the hypergraph.
+        Return a set of all vertices in the hypergraph.
         """
-        return list(self._v_data.keys())
+        return set(self._v_data.keys())
 
     @cached_property
-    def all_e(self) -> List[Tuple]:
+    def all_e(self) -> Set[Tuple]:
         r"""
-        Return a list of all hyperedges in the hypergraph.
+        Return a set of all hyperedges in the hypergraph.
         """
-        return list(self._e_data.keys())
+        return set(self._e_data.keys())
 
     @cached_property
     def num_v(self) -> int:
@@ -298,7 +298,7 @@ class HypergraphDB(BaseHypergraphDB):
         assert e_tuple in self._e_data, f"The hyperedge {e_tuple} does not exist in the hypergraph."
         return len(e_tuple)
 
-    def nbr_e_of_v(self, v_id: Any) -> list:
+    def nbr_e_of_v(self, v_id: Any) -> set:
         r"""
         Return the incident hyperedges of the vertex.
 
@@ -307,9 +307,9 @@ class HypergraphDB(BaseHypergraphDB):
         """
         assert isinstance(v_id, Hashable), "The vertex id must be hashable."
         assert v_id in self._v_data, f"The vertex {v_id} does not exist in the hypergraph."
-        return list(self._v_inci[v_id])
+        return set(self._v_inci[v_id])
 
-    def nbr_v_of_e(self, e_tuple: Union[List, Set, Tuple]) -> list:
+    def nbr_v_of_e(self, e_tuple: Union[List, Set, Tuple]) -> set:
         r"""
         Return the incident vertices of the hyperedge.
 
@@ -319,9 +319,9 @@ class HypergraphDB(BaseHypergraphDB):
         assert isinstance(e_tuple, (list, set, tuple)), "The hyperedge must be a list, set, or tuple of vertex ids."
         e_tuple = self.encode_e(e_tuple)
         assert e_tuple in self._e_data, f"The hyperedge {e_tuple} does not exist in the hypergraph."
-        return list(e_tuple)
+        return set(e_tuple)
 
-    def nbr_v(self, v_id: Any, exclude_self=True) -> list:
+    def nbr_v(self, v_id: Any, exclude_self=True) -> set:
         r"""
         Return the neighbors of the vertex.
 
@@ -335,4 +335,4 @@ class HypergraphDB(BaseHypergraphDB):
             nbrs.update(e_tuple)
         if exclude_self:
             nbrs.remove(v_id)
-        return list(nbrs)
+        return nbrs

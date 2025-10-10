@@ -93,16 +93,16 @@ class BaseHypergraphDB:
         raise NotImplementedError
 
     @cached_property
-    def all_v(self) -> List[str]:
+    def all_v(self) -> Set[Any]:
         r"""
-        Return a list of all vertices in the hypergraph.
+        Return a set of all vertices in the hypergraph.
         """
         raise NotImplementedError
 
     @cached_property
-    def all_e(self) -> List[Tuple]:
+    def all_e(self) -> Set[Tuple]:
         r"""
-        Return a list of all hyperedges in the hypergraph.
+        Return a set of all hyperedges in the hypergraph.
         """
         raise NotImplementedError
 
@@ -214,7 +214,7 @@ class BaseHypergraphDB:
         """
         raise NotImplementedError
 
-    def nbr_e_of_v(self, v_id: Any) -> list:
+    def nbr_e_of_v(self, v_id: Any) -> set:
         r"""
         Return the hyperedge neighbors of the vertex.
 
@@ -223,7 +223,7 @@ class BaseHypergraphDB:
         """
         raise NotImplementedError
 
-    def nbr_v_of_e(self, e_tuple: Tuple) -> list:
+    def nbr_v_of_e(self, e_tuple: Tuple) -> set:
         r"""
         Return the vertex neighbors of the hyperedge.
 
@@ -232,12 +232,13 @@ class BaseHypergraphDB:
         """
         raise NotImplementedError
 
-    def nbr_v(self, v_id: Any) -> list:
+    def nbr_v(self, v_id: Any, exclude_self: bool = True) -> set:
         r"""
         Return the vertex neighbors of the vertex.
 
         Args:
             ``v_id`` (``Any``): The vertex id.
+            ``exclude_self`` (``bool``): Whether to exclude the vertex itself from neighbors.
         """
         raise NotImplementedError
 

@@ -22,18 +22,18 @@ def hg():
 
 
 def test_all_v(hg):
-    assert hg.all_v == set([1, 2, 3, 4, 5, 6])
+    assert hg.all_v == {1, 2, 3, 4, 5, 6}
     assert hg.num_v == 6
     hg.remove_v(2)
-    assert hg.all_v == set([1, 3, 4, 5, 6])
+    assert hg.all_v == {1, 3, 4, 5, 6}
     assert hg.num_v == 5
 
 
 def test_all_e(hg):
-    assert hg.all_e == set([(1, 2), (1, 3), (2, 3, 4), (1, 3, 4, 5), (4, 5, 6), (1, 5, 6)])
+    assert hg.all_e == {(1, 2), (1, 3), (1, 3, 4, 5), (1, 5, 6), (2, 3, 4), (4, 5, 6)}
     assert hg.num_e == 6
     hg.remove_v(2)
-    assert hg.all_e == set([(1, 3), (3, 4), (1, 3, 4, 5), (4, 5, 6), (1, 5, 6)])
+    assert hg.all_e == {(1, 3), (1, 3, 4, 5), (1, 5, 6), (3, 4), (4, 5, 6)}
     assert hg.num_e == 5
 
 
