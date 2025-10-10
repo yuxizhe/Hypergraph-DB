@@ -38,7 +38,7 @@ class HypergraphDB(BaseHypergraphDB):
             self._v_inci = data.get("v_inci", {})
             self._e_data = data.get("e_data", {})
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def save(self, storage_file: Path) -> dict:
@@ -54,7 +54,7 @@ class HypergraphDB(BaseHypergraphDB):
             with open(storage_file, "wb") as f:
                 pkl.dump(data, f)
             return True
-        except Exception as e:
+        except Exception:
             return False
 
     def _clear_cache(self):

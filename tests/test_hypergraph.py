@@ -44,7 +44,7 @@ def test_v(hg):
     assert hg.v(4) == {"name": "David"}
     assert hg.v(5) == {"name": "Eve"}
     assert hg.v(6) == {"name": "Frank"}
-    assert hg.v(7) == None
+    assert hg.v(7) is None
 
 
 def test_e(hg):
@@ -54,23 +54,23 @@ def test_e(hg):
     assert hg.e((3, 4, 1, 5)) == {"relation": "study"}
     assert hg.e((4, 5, 6)) == {"relation": "study"}
     assert hg.e((1, 5, 6)) == {"relation": "study"}
-    assert hg.e((6, 1)) == None
+    assert hg.e((6, 1)) is None
     with pytest.raises(AssertionError):
         hg.e((1, 7))
 
 
 def test_add_v(hg):
     hg.add_v(7, {"name": "Grace"})
-    assert hg.has_v(7) == True
+    assert hg.has_v(7) is True
     assert hg.v(7) == {"name": "Grace"}
     hg.add_v(8)
-    assert hg.has_v(8) == True
+    assert hg.has_v(8) is True
     assert hg.v(8) == {}
 
 
 def test_add_e(hg):
     hg.add_e((6, 1), {"relation": "knows"})
-    assert hg.has_e((6, 1)) == True
+    assert hg.has_e((6, 1)) is True
     assert hg.e((6, 1)) == {"relation": "knows"}
 
     # test add_e with a vertex not in the hypergraph raises an error
@@ -79,19 +79,19 @@ def test_add_e(hg):
 
 
 def test_remove_v(hg):
-    hg.has_v(6) == True
-    hg.has_e((1, 5, 6)) == True
-    hg.e((1, 5, 6)) == {"relation": "study"}
+    assert hg.has_v(6) is True
+    assert hg.has_e((1, 5, 6)) is True
+    assert hg.e((1, 5, 6)) == {"relation": "study"}
     hg.remove_v(6)
-    hg.has_v(6) == False
-    hg.has_e((1, 5, 6)) == False
-    hg.has_e((5, 1)) == {"relation": "study"}
+    assert hg.has_v(6) is False
+    assert hg.has_e((1, 5, 6)) is False
+    assert hg.has_e((5, 1)) == {"relation": "study"}
 
 
 def test_remove_e(hg):
-    hg.has_e((1, 2)) == True
+    assert hg.has_e((1, 2)) is True
     hg.remove_e((1, 2))
-    hg.has_e((1, 2)) == False
+    assert hg.has_e((1, 2)) is False
     with pytest.raises(AssertionError):
         hg.remove_e((1, 7))
     with pytest.raises(AssertionError):
@@ -99,14 +99,14 @@ def test_remove_e(hg):
 
 
 def test_has_v(hg):
-    assert hg.has_v(1) == True
-    assert hg.has_v(7) == False
+    assert hg.has_v(1) is True
+    assert hg.has_v(7) is False
 
 
 def test_has_e(hg):
-    assert hg.has_e((1, 2)) == True
-    assert hg.has_e((6, 1)) == False
-    assert hg.has_e((1, 7)) == False
+    assert hg.has_e((1, 2)) is True
+    assert hg.has_e((6, 1)) is False
+    assert hg.has_e((1, 7)) is False
 
 
 def test_update_v(hg):
@@ -228,7 +228,7 @@ def test_save_and_load(hg, tmpdir):
     assert hg.e((4, 5, 6)) == hg2.e((4, 5, 6))
     assert hg.e((1, 5, 6)) == hg2.e((1, 5, 6))
     hg2.remove_v(2)
-    assert hg2.has_v(2) == False
+    assert hg2.has_v(2) is False
     hg3 = HypergraphDB()
     hg3.load(file_path)
     assert hg == hg3

@@ -17,7 +17,8 @@ class BaseHypergraphDB:
         Save the hypergraph to a file.
 
         Args:
-            ``file_path`` (``Union[str, Path]``): The file path to save the hypergraph.
+            ``file_path`` (``Union[str, Path]``): The file path to save the
+                hypergraph.
         """
         raise NotImplementedError
 
@@ -230,14 +231,6 @@ class BaseHypergraphDB:
 
         Args:
             ``v_id`` (``Any``): The vertex id.
-        """
-        raise NotImplementedError
-
-    def draw(
-        self,
-    ):
-        r"""
-        Draw the hypergraph.
         """
         raise NotImplementedError
 

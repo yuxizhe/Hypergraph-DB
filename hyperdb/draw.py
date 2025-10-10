@@ -1,6 +1,5 @@
 import http.server
 import json
-import os
 import socketserver
 import threading
 import webbrowser
@@ -233,7 +232,9 @@ class HypergraphViewer:
         """Start HTTP server with API endpoints"""
 
         def run_server():
-            handler = lambda *args, **kwargs: HypergraphAPIHandler(self.hypergraph_db, *args, **kwargs)
+            def handler(*args, **kwargs):
+                return HypergraphAPIHandler(self.hypergraph_db, *args, **kwargs)
+
             self.httpd = socketserver.TCPServer(("127.0.0.1", self.port), handler)
             self.httpd.serve_forever()
 
