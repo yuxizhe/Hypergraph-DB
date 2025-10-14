@@ -1,6 +1,6 @@
 [project]
 name = "hypergraph-db"
-version = "0.2.0"
+version = "0.3.0"
 description = "A Lightweight Hypergraph Database with hypergraph visualization."
 authors = [
     {name = "Yifan Feng", email = "evanfeng97@qq.com"}
